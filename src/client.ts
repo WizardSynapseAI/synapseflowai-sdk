@@ -89,9 +89,7 @@ export class SynapseFlowClient {
       try {
         const json = (await res.json()) as { message?: string }
         if (json.message) message = json.message
-      } catch {
-        // ignore JSON parse failure on error body
-      }
+      } catch {}
       throw new SynapseFlowError(message, res.status)
     }
 
