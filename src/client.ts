@@ -8,11 +8,9 @@ import type {
   TriggerWorkflowResult,
   WebhookSubscription,
   Workflow,
-  WorkflowListItem,
+  WorkflowListItem
 } from './types'
 import { SynapseFlowError } from './types'
-
-const DEFAULT_BASE_URL = 'https://api.synapseflowai.com'
 
 export class SynapseFlowClient {
   private readonly apiKey: string
@@ -22,7 +20,7 @@ export class SynapseFlowClient {
     if (!options.apiKey) throw new SynapseFlowError('apiKey is required')
     if (!options.apiKey.startsWith('sk_')) throw new SynapseFlowError('apiKey must start with sk_')
     this.apiKey = options.apiKey
-    this.baseUrl = (options.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, '')
+    this.baseUrl = (options.baseUrl ?? 'https://api.synapseflowai.com').replace(/\/$/, '')
   }
 
   // ─── Workflows ─────────────────────────────────────────────────────────────
@@ -38,16 +36,9 @@ export class SynapseFlowClient {
     return res.data
   }
 
-  async triggerWorkflow(
-    workflowId: string,
-    options?: TriggerWorkflowOptions
-  ): Promise<TriggerWorkflowResult> {
+  async triggerWorkflow(workflowId: string, options?: TriggerWorkflowOptions): Promise<TriggerWorkflowResult> {
     if (!workflowId) throw new SynapseFlowError('workflowId is required')
-    return this.request<TriggerWorkflowResult>(
-      'POST',
-      `/v1/workflows/${workflowId}/trigger`,
-      options?.payload ?? {}
-    )
+    return this.request<TriggerWorkflowResult>('POST', `/v1/workflows/${workflowId}/trigger`, options?.payload ?? {})
   }
 
   // ─── Customers ─────────────────────────────────────────────────────────────
@@ -83,14 +74,14 @@ export class SynapseFlowClient {
     const headers: Record<string, string> = {
       Authorization: `Bearer ${this.apiKey}`,
       'Content-Type': 'application/json',
-      'User-Agent': `@synapseflowai/sdk`,
+      'User-Agent': `@synapseflowai/sdk`
     }
 
     const res = await fetch(url, {
       body: body !== undefined ? JSON.stringify(body) : undefined,
       headers,
       method,
-      signal: AbortSignal.timeout(30_000),
+      signal: AbortSignal.timeout(30_000)
     })
 
     if (!res.ok) {
